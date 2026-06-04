@@ -119,7 +119,8 @@ Calculadora paso a paso
 <div class="ejemplo">
 Ejemplos:<br>
 ∫2x(x^2+1)^5 dx<br>
-∫3x(3x^2+4)^2 dx
+∫3x(3x^2+4)^2 dx<br>
+∫4x(x^2+9)^3 dx
 </div>
 
 <textarea
@@ -141,12 +142,25 @@ Aquí aparecerá el procedimiento.
 
 function simplificar(a,b){
 
-if(a % b === 0){
-return (a/b).toString();
+let mcd = (x,y)=>{
+while(y){
+let t=y;
+y=x%y;
+x=t;
+}
+return x;
+};
+
+let divisor = mcd(a,b);
+
+a=a/divisor;
+b=b/divisor;
+
+if(b===1){
+return a.toString();
 }
 
 return a + "/" + b;
-
 }
 
 function resolver(){
@@ -167,17 +181,16 @@ if(!patron){
 document.getElementById("salida").innerHTML = `
 <h2>Formato no reconocido</h2>
 
-Ejemplos válidos:
+<p>Ejemplos válidos:</p>
 
 <ul>
 <li>∫2x(x^2+1)^5 dx</li>
 <li>∫3x(3x^2+4)^2 dx</li>
-<li>4x(x^2+9)^3</li>
+<li>∫4x(x^2+9)^3 dx</li>
 </ul>
 `;
 
 return;
-
 }
 
 let coefExterior = Number(patron[1]);
@@ -193,11 +206,11 @@ let du = coefInterior * 2;
 
 let nuevoExp = exponente + 1;
 
-let denominador =
-du * nuevoExp;
-
 let coefResultado =
-simplificar(coefExterior,denominador);
+simplificar(
+coefExterior,
+du * nuevoExp
+);
 
 let resultadoFinal = "";
 
@@ -209,8 +222,20 @@ resultadoFinal =
 }
 else{
 
+let partes = coefResultado.split("/");
+
+if(partes.length === 2){
+
+resultadoFinal =
+`(${coefInterior}x²${constante})^${nuevoExp}/${partes[1]}`;
+
+}
+else{
+
 resultadoFinal =
 `${coefResultado}(${coefInterior}x²${constante})^${nuevoExp}`;
+
+}
 
 }
 
@@ -220,35 +245,35 @@ let pasos = `
 
 <div class="paso">
 <b>Paso 1:</b><br><br>
-Sea:
-<br><br>
 u = ${coefInterior}x²${constante}
 </div>
 
 <div class="paso">
 <b>Paso 2:</b><br><br>
-Derivamos:
-<br><br>
 du = ${du}x dx
 </div>
 
 <div class="paso">
 <b>Paso 3:</b><br><br>
-Sustituimos:
+Sustituyendo:
 <br><br>
 ∫u^${exponente} du
 </div>
 
 <div class="paso">
 <b>Paso 4:</b><br><br>
-Integramos:
+Aplicamos la regla:
+<br><br>
+∫uⁿdu = uⁿ⁺¹/(n+1)
 <br><br>
 u^${nuevoExp}/${nuevoExp}
 </div>
 
 <div class="paso">
 <b>Paso 5:</b><br><br>
-Regresamos a la variable x
+Sustituimos nuevamente u por:
+<br><br>
+${coefInterior}x²${constante}
 </div>
 
 <hr>
