@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integrales por Sustitución</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+min-height:100vh;
+background:linear-gradient(135deg,#0f5132,#198754,#20c997);
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:1000px;
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:25px;
+box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+h1{
+text-align:center;
+color:white;
+margin-bottom:15px;
+}
+
+.subtitulo{
+text-align:center;
+color:white;
+margin-bottom:20px;
+}
+
+.ejemplo{
+background:rgba(255,255,255,.2);
+color:white;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+textarea{
+width:100%;
+height:120px;
+padding:15px;
+font-size:18px;
+border:none;
+border-radius:15px;
+resize:none;
+outline:none;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+border:none;
+border-radius:15px;
+background:linear-gradient(90deg,#00c853,#64dd17);
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-3px);
+}
+
+.resultado{
+margin-top:20px;
+background:white;
+padding:20px;
+border-radius:20px;
+}
+
+.paso{
+background:#f7fff9;
+padding:15px;
+margin-top:15px;
+border-left:6px solid #20c997;
+border-radius:10px;
+}
+
+h2{
+color:#198754;
+}
+
+h3{
+color:#0f5132;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📘 Integrales por Sustitución</h1>
+
+<p class="subtitulo">
+Calculadora paso a paso
+</p>
+
+<div class="ejemplo">
+Ejemplos:<br>
+∫2x(x^2+1)^5 dx<br>
+∫3x(3x^2+4)^2 dx
+</div>
+
+<textarea
+id="integral"
+placeholder="Escribe la integral">
+</textarea>
+
+<button onclick="resolver()">
+∫ Resolver Integral
+</button>
+
+<div id="salida" class="resultado">
+Aquí aparecerá el procedimiento.
+</div>
+
+</div>
+
+<script>
+
+function simplificar(a,b){
+
+if(a % b === 0){
+return (a/b).toString();
+}
+
+return a + "/" + b;
+
+}
+
+function resolver(){
+
+let expresion =
+document.getElementById("integral").value;
+
+expresion = expresion
+.replace(/\s+/g,'')
+.replace('∫','')
+.replace('dx','');
+
+let patron =
+expresion.match(/^(\d+)x\((\d*)x\^2([+-]\d+)\)\^(\d+)$/);
+
+if(!patron){
+
+document.getElementById("salida").innerHTML = `
+<h2>Formato no reconocido</h2>
+
+Ejemplos válidos:
+
+<ul>
+<li>∫2x(x^2+1)^5 dx</li>
+<li>∫3x(3x^2+4)^2 dx</li>
+<li>4x(x^2+9)^3</li>
+</ul>
+`;
+
+return;
+
+}
+
+let coefExterior = Number(patron[1]);
+
+let coefInterior =
+patron[2] === "" ? 1 : Number(patron[2]);
+
+let constante = patron[3];
+
+let exponente = Number(patron[4]);
+
+let du = coefInterior * 2;
+
+let nuevoExp = exponente + 1;
+
+let denominador =
+du * nuevoExp;
+
+let coefResultado =
+simplificar(coefExterior,denominador);
+
+let resultadoFinal = "";
+
+if(coefResultado === "1"){
+
+resultadoFinal =
+`(${coefInterior}x²${constante})^${nuevoExp}`;
+
+}
+else{
+
+resultadoFinal =
+`${coefResultado}(${coefInterior}x²${constante})^${nuevoExp}`;
+
+}
+
+let pasos = `
+
+<h2>Procedimiento Paso a Paso</h2>
+
+<div class="paso">
+<b>Paso 1:</b><br><br>
+Sea:
+<br><br>
+u = ${coefInterior}x²${constante}
+</div>
+
+<div class="paso">
+<b>Paso 2:</b><br><br>
+Derivamos:
+<br><br>
+du = ${du}x dx
+</div>
+
+<div class="paso">
+<b>Paso 3:</b><br><br>
+Sustituimos:
+<br><br>
+∫u^${exponente} du
+</div>
+
+<div class="paso">
+<b>Paso 4:</b><br><br>
+Integramos:
+<br><br>
+u^${nuevoExp}/${nuevoExp}
+</div>
+
+<div class="paso">
+<b>Paso 5:</b><br><br>
+Regresamos a la variable x
+</div>
+
+<hr>
+
+<h2>Resultado Final</h2>
+
+<h3>
+${resultadoFinal} + C
+</h3>
+
+`;
+
+document.getElementById("salida").innerHTML =
+pasos;
+
+}
+
+</script>
+
+</body>
+</html>
